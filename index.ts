@@ -117,6 +117,7 @@ import {
   CreateProjectMilestoneSchema,
   CreateRepositoryOptionsSchema,
   CreateRepositorySchema,
+  CreateGroupSchema,
   CreateWikiPageSchema,
   CreateGroupWikiPageSchema,
   DeleteDraftNoteSchema,
@@ -184,6 +185,7 @@ import {
   GitLabDraftNoteSchema,
   type GitLabFork,
   GitLabForkSchema,
+  GitLabGroupSchema,
   type GitLabIssue,
   type GitLabIssueLink,
   GitLabIssueLinkSchema,
@@ -8437,6 +8439,34 @@ async function handleToolCall(params: any) {
         const repository = await createRepository(args);
         return {
           content: [{ type: "text", text: JSON.stringify(repository, null, 2) }],
+        };
+      }
+
+      case "create_group": {
+        const args = CreateGroupSchema.parse(params.arguments);
+        const url = new URL(`${GITLAB_API_URL}/groups`);
+
+        const body: Record<string, unknown> = {
+          name: args.name,
+          path: args.path,
+        };
+        if (args.description) body.description = args.description;
+        if (args.visibility) body.visibility = args.visibility;
+        if (args.parent_id) body.parent_id = args.parent_id;
+
+        const response = await fetch(url.toString(), {
+          ...getFetchConfig(),
+          method: "POST",
+          headers: { ...getFetchConfig().headers, "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        await handleGitLabError(response);
+        const data = await response.json();
+        const group = GitLabGroupSchema.parse(data);
+
+        return {
+          content: [{ type: "text", text: JSON.stringify(group, null, 2) }],
         };
       }
 
