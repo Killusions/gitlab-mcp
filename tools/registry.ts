@@ -109,6 +109,7 @@ import {
   GetTagSignatureSchema,
   GetTimelineEventsSchema,
   GetUsersSchema,
+  HealthCheckSchema,
   GetWebhookEventSchema,
   GetWikiPageSchema,
   GetWorkItemSchema,
@@ -593,6 +594,11 @@ export const allTools = [
     name: "list_group_projects",
     description: "List projects in a group",
     inputSchema: toJSONSchema(ListGroupProjectsSchema),
+  },
+  {
+    name: "health_check",
+    description: "Verify server status and authentication",
+    inputSchema: toJSONSchema(HealthCheckSchema),
   },
   {
     name: "list_wiki_pages",

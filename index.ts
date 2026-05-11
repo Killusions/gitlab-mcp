@@ -160,6 +160,7 @@ import {
   type GetRepositoryTreeOptions,
   GetRepositoryTreeSchema,
   GetUsersSchema,
+  HealthCheckSchema,
   GetWikiPageSchema,
   type GitLabCommit,
   GitLabCommitSchema,
@@ -10339,6 +10340,39 @@ async function handleToolCall(params: any) {
         return {
           content: [{ type: "text", text: JSON.stringify(event, null, 2) }],
         };
+      }
+
+      case "health_check": {
+        HealthCheckSchema.parse(params.arguments);
+        const url = new URL(`${GITLAB_API_URL}/projects?per_page=1`);
+
+        try {
+          const response = await fetch(url.toString(), {
+            ...getFetchConfig(),
+          });
+
+          const authenticated = response.ok;
+          const result = {
+            status: authenticated ? "ok" : "error",
+            authenticated,
+            gitlab_url: GITLAB_API_URL,
+          };
+
+          return {
+            content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+          };
+        } catch (error) {
+          const result = {
+            status: "error",
+            authenticated: false,
+            gitlab_url: GITLAB_API_URL,
+            error: error instanceof Error ? error.message : "Unknown error",
+          };
+
+          return {
+            content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+          };
+        }
       }
 
       default:

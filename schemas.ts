@@ -550,6 +550,9 @@ export const GitLabUsersResponseSchema = z.record(
     .nullable()
 );
 
+// Health check schema
+export const HealthCheckSchema = z.object({});
+
 // Namespace related schemas
 
 // Base schema for project-related operations
