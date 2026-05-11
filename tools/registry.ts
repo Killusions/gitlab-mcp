@@ -51,6 +51,7 @@ import {
   ListWorkItemEmojiReactionsSchema,
   ListWorkItemNoteEmojiReactionsSchema,
   CreateWorkItemSchema,
+  DeleteBranchSchema,
   DeleteDraftNoteSchema,
   DeleteGroupWikiPageSchema,
   DeleteIssueLinkSchema,
@@ -75,6 +76,7 @@ import {
   ExecuteGraphQLSchema,
   ForkRepositorySchema,
   GetBranchDiffsSchema,
+  GetBranchSchema,
   GetCommitDiffSchema,
   GetCommitSchema,
   GetDeploymentSchema,
@@ -112,6 +114,7 @@ import {
   GetWebhookEventSchema,
   GetWikiPageSchema,
   GetWorkItemSchema,
+  ListBranchesSchema,
   ListCommitsSchema,
   ListCommitStatusesSchema,
   ListCustomFieldDefinitionsSchema,
@@ -256,6 +259,21 @@ export const allTools = [
     name: "create_branch",
     description: "Create a new branch",
     inputSchema: toJSONSchema(CreateBranchSchema),
+  },
+  {
+    name: "get_branch",
+    description: "Get branch details (commit, protection status)",
+    inputSchema: toJSONSchema(GetBranchSchema),
+  },
+  {
+    name: "list_branches",
+    description: "List branches in project with search filter",
+    inputSchema: toJSONSchema(ListBranchesSchema),
+  },
+  {
+    name: "delete_branch",
+    description: "Delete branch from project",
+    inputSchema: toJSONSchema(DeleteBranchSchema),
   },
   {
     name: "get_merge_request",
@@ -1180,6 +1198,7 @@ export const destructiveTools = new Set([
   "delete_work_item_note_emoji_reaction",
   "merge_merge_request",
   "push_files",
+  "delete_branch",
 ]);
 
 // Define which tools are related to wiki and can be toggled by USE_GITLAB_WIKI
@@ -1355,6 +1374,9 @@ export const TOOLSET_DEFINITIONS: readonly ToolsetDefinition[] = [
     isDefault: true,
     tools: new Set([
       "create_branch",
+      "get_branch",
+      "list_branches",
+      "delete_branch",
       "list_commits",
       "get_commit",
       "get_commit_diff",
